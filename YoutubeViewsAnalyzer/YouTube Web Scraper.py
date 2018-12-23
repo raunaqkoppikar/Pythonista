@@ -1,40 +1,21 @@
-
-# coding: utf-8
-
-# In[14]:
-
-
-get_ipython().run_line_magic('config', 'IPCompleter.greedy=True')
-
-
-# In[2]:
-
-
 from bs4 import BeautifulSoup
 import requests
 
-
-# Problem
-# 
 # Count the number of views for all videos on first page of youtube for given keyword
 
-# In[47]:
-
-
+# Get the keyword as an input from the end user
 keyword = input("Enter your keyword:")
+
+# Get the YouTube URL on the basis of the keyword
 url = 'https://www.youtube.com/results?search_query='+keyword
+
+# Get the resulting HTML page from the URL
 response = requests.get(url)
 
-
-# In[48]:
-
-
+# Create a Beautiful Soup object from the resulting HTML text
 bsObj = BeautifulSoup(response.text, 'lxml')
 
-
-# In[51]:
-
-
+# Get the total and average number of views for all videos associated with the keyword
 totalViews = 0
 numberOfVideos = 0
 ul_list = bsObj.find_all('ul', class_ = 'yt-lockup-meta-info')
@@ -46,11 +27,5 @@ for ul in ul_list:
             temp = li.getText()
             temp = temp.replace(' views', '').replace(',', '')
             totalViews = totalViews + int(temp)
-
-
-# In[52]:
-
-
 print("Total Views: " + str(totalViews))
 print("Average number of Views: " + str(round(totalViews/numberOfVideos)))
-
