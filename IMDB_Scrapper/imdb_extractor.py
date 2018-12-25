@@ -23,6 +23,7 @@ for film in films:
 		for rating in ratings:
 			review = rating.getText().replace('\n', '')
 			film_ratings.append(review)
+		for title in titles:
 			name = title.find('a').getText()
 			year = title.find('span', class_ = 'secondaryInfo').getText().replace('(', '').replace(')', '')
 			film_names.append(name)
