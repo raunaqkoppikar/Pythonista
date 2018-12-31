@@ -14,6 +14,7 @@ film_years = []
 film_ratings = []
 
 films = soup.find_all('tbody', class_ = 'lister-list')
+film_genres = []
 
 for film in films:
 	film_rows = film.findChildren('tr')
@@ -28,6 +29,23 @@ for film in films:
 			year = title.find('span', class_ = 'secondaryInfo').getText().replace('(', '').replace(')', '')
 			film_names.append(name)
 			film_years.append(year)
+			# Film Details
+			film_url = 'https://www.imdb.com' + str(title.find('a')['href'].split("?pf")[0])
+			film_response = requests.get(film_url)
+			film_soup = BeautifulSoup(film_response.text, 'lxml')
+			details = film_soup.find_all('div', class_='subtext')
+			genre_list = []
+			for detail in details:
+				genres = detail.findChildren('a')
+				for each in range(len(genres) - 1):
+					genre = genres[each].getText()
+					genre_list.append(genre)
+			if len(genre_list) > 1:
+				genre = '/'.join(genre_list)
+			else:
+				genre = genre_list[0]
+			print(genre)
+			film_genres.append(genre)
 
 film_ratings = [float(x) if x != '' else None for x in film_ratings]
 
@@ -35,6 +53,7 @@ film_years = [int(y) for y in film_years]
 
 imdb_frame = pd.DataFrame(
     {'Title': film_names,
+     'Genre': film_genres,
      'Year of Release': film_years,
      'Rating': film_ratings
     })
@@ -53,5 +72,6 @@ imdb_frame.sort_values(['Rating'], ascending=False, inplace=True)
 print("Highest rated film: " + imdb_frame['Title'].iloc[0])
 print("Rating: " + str(imdb_frame['Rating'].iloc[0]))
 print("Year of Release: " + str(imdb_frame['Year of Release'].iloc[0]))
+print("Genres: " + str(imdb_frame['Genre'].iloc[0]))
 
 input("Press Enter to close the application")
